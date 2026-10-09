@@ -1,0 +1,69 @@
+[
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000001",
+    "PublicId": "seed/products/classic-white-t-shirt",
+    "Url": "images/products/ClassicWhiteTShirt.jpeg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000002",
+    "PublicId": "seed/products/slim-fit-jeans",
+    "Url": "images/products/SlimFitJeans.jpg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000003",
+    "PublicId": "seed/products/denim-jacket",
+    "Url": "images/products/DenimJacket.jpg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000004",
+    "PublicId": "seed/products/cotton-hoodie",
+    "Url": "images/products/CottonHoodie.jpg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000005",
+    "PublicId": "seed/products/formal-blazer",
+    "Url": "images/products/FormalBlazer.jpg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000006",
+    "PublicId": "seed/products/summer-floral-dress",
+    "Url": "images/products/SummerFloralDress.jpg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000007",
+    "PublicId": "seed/products/mens-leather-jacket",
+    "Url": "images/products/MensLeatherJacket.jpg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000008",
+    "PublicId": "seed/products/casual-sneakers",
+    "Url": "images/products/CasualSneakers.jpg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000009",
+    "PublicId": "seed/products/classic-black-dress-pants",
+    "Url": "images/products/ClassicBlackDressPants.jpg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000010",
+    "PublicId": "seed/products/knitted-sweater",
+    "Url": "images/products/KnittedSweater.jpg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000011",
+    "PublicId": "seed/products/mens-polo-shirt",
+    "Url": "images/products/MensPoloShirt.jpg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000012",
+    "PublicId": "seed/products/womens-trench-coat",
+    "Url": "images/products/WomensTrenchCoat.jpeg"
+  },
+  {
+    "Id": "d4e5f6a7-0004-4000-8000-000000000013",
+    "PublicId": "seed/products/wool-scarf",
+    "Url": "images/products/WoolScarf.jpg"
+  }
+]{
+
+}
