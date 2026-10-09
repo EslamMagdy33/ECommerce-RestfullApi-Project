@@ -19,9 +19,14 @@ public sealed class LoginCommandHandler(
 
         if(validateResult.IsFailure)
         {
-            return Result<AuthResponse>.Failure(
-                validateResult.Error.Code == IdentityErrors.EmailNotConfirmed.Code ?
-                IdentityErrors.EmailNotConfirmed : IdentityErrors.InvalidCredentials);
+            var code = validateResult.Error.Code;
+
+            var error =
+                code == IdentityErrors.EmailNotConfirmed.Code ? IdentityErrors.EmailNotConfirmed :
+                code == IdentityErrors.AccountLockedOut.Code ? IdentityErrors.AccountLockedOut :
+                IdentityErrors.InvalidCredentials;
+
+            return Result<AuthResponse>.Failure(error);
         }
         var user = validateResult.Value;
 

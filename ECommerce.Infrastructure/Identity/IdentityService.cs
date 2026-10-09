@@ -46,11 +46,18 @@ public class IdentityService(UserManager<ApplicationUser> userManager)
         if (user is null)
             return Result<AuthUserSnapshot>.Failure(IdentityErrors.InvalidCredentials);
 
-        var isPasswordValid = await userManager.CheckPasswordAsync(user, password);
-        if (!isPasswordValid)
-            return Result<AuthUserSnapshot>.Failure(IdentityErrors.InvalidCredentials);
+        if(await userManager.IsLockedOutAsync(user))
+            return Result<AuthUserSnapshot>.Failure(IdentityErrors.AccountLockedOut);
 
-        if(!user.EmailConfirmed)
+        var isPasswordValid = await userManager.CheckPasswordAsync(user, password);
+
+        if (!isPasswordValid)
+        {
+            await userManager.AccessFailedAsync(user);
+            return Result<AuthUserSnapshot>.Failure(IdentityErrors.InvalidCredentials);
+        }
+
+        if (!user.EmailConfirmed)
             return Result<AuthUserSnapshot>.Failure(IdentityErrors.EmailNotConfirmed);
 
         return Result<AuthUserSnapshot>.Success(

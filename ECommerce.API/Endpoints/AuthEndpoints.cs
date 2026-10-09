@@ -23,6 +23,7 @@ public static class AuthEndpoints
             .WithApiVersionSet(apiVersionSet)
             .HasApiVersion(new ApiVersion(1, 0))
             .AllowAnonymous()
+            .RequireRateLimiting("auth")
             .AddEndpointFilter<AuditEndpointFilter>();
 
         group.MapPost("/register", async (

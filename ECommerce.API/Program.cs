@@ -8,6 +8,7 @@ using ECommerce.Infrastructure.persistence.Data.DbContexts;
 using ECommerce.Infrastructure.Persistence.Seeding;
 using ECommerce.UseCases;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,19 @@ builder.Services.AddOutputCache(options =>
     });
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("auth", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+});
 
 builder.Services.AddPresentation();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -30,9 +44,11 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 
-app.UseAuthentication();
+app.UseRateLimiter();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseOutputCache();
 
 var apiVersionSet = app.NewApiVersionSet()

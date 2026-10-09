@@ -49,13 +49,15 @@ public static class IdentityErrors
             "Identity.RefreshTokenExpired",
             "Refresh token has expired. Please sign in again.");
 
+    public static readonly Error AccountLockedOut =
+    Error.UnAuthorized("Identity.AccountLockedOut",
+        "Too many failed attempts. The account is temporarily locked, try again later.");
+
     public static Error CreateFailed(string message) =>
         Error.Validation(
             "Identity.CreateFailed",
             message);
 
-    public static Error Validation(string message) =>
-        Error.Validation(
-            "Identity.Validation",
-            message);
+    public static Error Validation(string message) =>Error.Validation("Identity.Validation", message);
+    
 }

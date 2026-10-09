@@ -51,6 +51,8 @@ namespace ECommerce.Infrastructure
                 options.Password.RequireDigit = true;
                 options.User.RequireUniqueEmail = true;
                 options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+                options.Lockout.AllowedForNewUsers = true;
                 options.SignIn.RequireConfirmedEmail = true;
                 options.SignIn.RequireConfirmedAccount = true;
             })
