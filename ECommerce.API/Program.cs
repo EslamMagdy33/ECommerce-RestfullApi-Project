@@ -5,7 +5,6 @@ using ECommerce.API.Endpoints;
 using ECommerce.Infrastructure;
 using ECommerce.Infrastructure.Identity;
 using ECommerce.Infrastructure.persistence.Data.DbContexts;
-using ECommerce.Infrastructure.Persistence.Data.Interceptor;
 using ECommerce.Infrastructure.Persistence.Seeding;
 using ECommerce.UseCases;
 using Microsoft.EntityFrameworkCore;

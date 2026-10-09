@@ -78,7 +78,8 @@ public static class ProductEndpoints
             .WithSummary("Creates a new product")
             .WithDescription("Returns product ID")
             .Accepts<CreateProductCommand>("multipart/form-data")
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .RequireAuthorization(p => p.RequireRole(Roles.SuperAdmin));
 
     group.MapPut("/{id:guid}", async (
     Guid id,
