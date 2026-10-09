@@ -14,4 +14,5 @@ public interface IReadRepository<T> where T : BaseEntity
     Task<int> CountAsync(ISpecification<T> specification, CancellationToken ct = default);
     Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken ct = default);
     Task<PagedResult<T>> PagedListAsync(ISpecification<T> specification, CancellationToken ct = default);
+    Task<IReadOnlyList<T>> ListIncludingDeletedAsync(ISpecification<T> specification, CancellationToken ct = default);
 }

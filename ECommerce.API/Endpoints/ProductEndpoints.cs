@@ -4,6 +4,7 @@ using ECommerce.API.Extensions;
 using ECommerce.API.Filters;
 using ECommerce.API.Models;
 using ECommerce.Domain.Common;
+using ECommerce.Domain.Constants;
 using ECommerce.Infrastructure;
 using ECommerce.UseCases.Messaging.Abstractions;
 using ECommerce.UseCases.Products;
@@ -109,7 +110,8 @@ public static class ProductEndpoints
         .Accepts<UpdateProductCommand>("multipart/form-data")
         .Produces<ApiResponse<Guid>>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
-        .ProducesProblem(StatusCodes.Status404NotFound);
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .RequireAuthorization(p => p.RequireRole(Roles.SuperAdmin));
 
         group.MapDelete("/{id:guid}", async (Guid id,ISender sender,HttpContext httpContext,CancellationToken ct) =>
         {
@@ -128,7 +130,8 @@ public static class ProductEndpoints
         .WithSummary("Deletes a product")
         .WithDescription("Soft deletes a product")
         .Produces<ApiResponse<string>>(StatusCodes.Status200OK)
-        .ProducesProblem(StatusCodes.Status404NotFound);
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .RequireAuthorization(p => p.RequireRole(Roles.SuperAdmin));
 
         return endpoints;
     }

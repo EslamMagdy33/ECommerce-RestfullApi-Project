@@ -10,7 +10,6 @@ namespace ECommerce.Domain.Entities
         public DateTimeOffset CreatedAt { get; protected set; }
         public DateTimeOffset? UpdatedAt  { get; protected set; }
         public bool IsDeleted { get; set; }
-
         public void MarkAsDeleted()
         {
             IsDeleted = true;

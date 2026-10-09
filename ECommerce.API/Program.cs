@@ -31,11 +31,10 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 
-app.UseOutputCache();
-
 app.UseAuthentication();
 
 app.UseAuthorization();
+app.UseOutputCache();
 
 var apiVersionSet = app.NewApiVersionSet()
     .HasApiVersion(new ApiVersion(1, 0))
@@ -51,6 +50,7 @@ app.MapBrandEndpoints(apiVersionSet);
 app.MapDeliveryMethodEndpoints(apiVersionSet);
 app.MapOrderEndpoints(apiVersionSet);
 app.MapPaymentEndpoints(apiVersionSet);
+app.MapAttachmentCleanupEndpoints(apiVersionSet);
 
 if (app.Environment.IsDevelopment())
 {
@@ -86,3 +86,4 @@ if (app.Environment.IsDevelopment())
 
 await app.RunAsync();
 
+public partial class Program { }

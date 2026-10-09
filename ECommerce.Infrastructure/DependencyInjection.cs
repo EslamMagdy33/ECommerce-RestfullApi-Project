@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -28,17 +29,20 @@ namespace ECommerce.Infrastructure
             var connectionString = config.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing.");
 
-            services.AddDbContext<StoreDbContext>(options =>
+            services.AddDbContext<StoreDbContext>((sp,options )=>
             {
-                options.UseSqlServer(connectionString,sql=>
-                sql.MigrationsHistoryTable("__ApplicationMigrationsHistory","app"))
-                        .EnableSensitiveDataLogging();
+                options.UseSqlServer(connectionString, sql =>
+                sql.MigrationsHistoryTable("__ApplicationMigrationsHistory", "app"));
+                if (sp.GetRequiredService<IHostEnvironment>().IsDevelopment())
+                    options.EnableSensitiveDataLogging();
             });
-            services.AddDbContext<AppIdentityDbContext>(options =>
+            services.AddDbContext<AppIdentityDbContext>((sp,options )=>
             {
-                options.UseSqlServer(connectionString,sql =>
-                sql.MigrationsHistoryTable("__IdentityMigrationsHistory","identity"))
-                        .EnableSensitiveDataLogging();
+                options.UseSqlServer(connectionString, sql =>
+                sql.MigrationsHistoryTable("__IdentityMigrationsHistory", "identity"));
+
+                if (sp.GetRequiredService<IHostEnvironment>().IsDevelopment())
+                    options.EnableSensitiveDataLogging();
             });
 
             services.AddIdentityCore<ApplicationUser>(options =>
@@ -97,7 +101,7 @@ namespace ECommerce.Infrastructure
                     $"Configuration section '{EmailSettings.SectionName}' is missing.");
 
             services.Configure<StripeSettings>(config.GetSection(StripeSettings.SectionName));
-            var stripeSettings = config.GetSection(StripeSettings.SectionName).Get<EmailSettings>()
+            var stripeSettings = config.GetSection(StripeSettings.SectionName).Get<StripeSettings>()
                 ?? throw new InvalidOperationException(
                     $"Configuration section '{StripeSettings.SectionName}' is missing.");
 
@@ -123,6 +127,8 @@ namespace ECommerce.Infrastructure
             services.Configure<CloudinarySettings>(config.GetSection(nameof(CloudinarySettings)));
             services.AddScoped<IAttachmentService, AttachmentService>();
             services.AddScoped<IPaymentService, StripePaymentService>();
+            services.AddScoped<IAttachmentCleanupService, AttachmentCleanupService>();
+            services.AddScoped<IHardDeleteTracker, HardDeleteTracker>();
 
             AddBasketCaching(services, config);
 
@@ -132,7 +138,7 @@ namespace ECommerce.Infrastructure
         {
             services
                 .AddOptions<CacheEntryPolicy>("Basket")
-                .Bind(config.GetSection("CachedAggregate:Basket"))
+                .Bind(config.GetSection("CachedAggregates:Basket"))
                 .ValidateOnStart();
             services.AddSingleton<IValidateOptions<CacheEntryPolicy>, CacheEntryPolicyValidator>();
 

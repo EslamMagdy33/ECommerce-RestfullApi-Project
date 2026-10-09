@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 namespace ECommerce.Infrastructure.Repositories;
 
 public class UnitOfWork(StoreDbContext dbContext,IAuditInterceptor auditInterceptor
-    ,ISoftDeleteInterceptor softDeleteInterceptor) : IUnitOfWork
+    ,ISoftDeleteInterceptor softDeleteInterceptor, IHardDeleteTracker hardDeleteTracker) : IUnitOfWork
 {
     // Type(Product)=>IRepo<Product>
     private readonly ConcurrentDictionary<Type, object> _Repos = new();
@@ -17,7 +17,7 @@ public class UnitOfWork(StoreDbContext dbContext,IAuditInterceptor auditIntercep
        var type= typeof(T);
         if (_Repos.TryGetValue(type, out var rebo))
             return (IRepository<T>) rebo;
-        var newRepo = new Repository<T>(dbContext);
+        var newRepo = new Repository<T>(dbContext, hardDeleteTracker);
         _Repos.TryAdd(type, newRepo);
         return newRepo;
     }
@@ -26,6 +26,14 @@ public class UnitOfWork(StoreDbContext dbContext,IAuditInterceptor auditIntercep
     {
         softDeleteInterceptor.Apply(dbContext);
         auditInterceptor.Apply(dbContext);
-        return await dbContext.SaveChangesAsync(ct);
+        try
+        {
+            return await dbContext.SaveChangesAsync(ct);
+        }
+        finally
+        {
+            hardDeleteTracker.Clear();
+        }
+        
     }
 }
