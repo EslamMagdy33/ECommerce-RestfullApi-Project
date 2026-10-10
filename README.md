@@ -223,13 +223,16 @@ Base path: `/api/v1`. The full, always-current contract is in Swagger.
 | Group | Endpoints | Access |
 |---|---|---|
 | **Auth** | `POST /Auth/register`, `/confirm-email`, `/login`, `/refresh`, `/logout` | Public (rate limited) |
+![Swagger UI](docs/swagger-Login-Example.png)
 | **Products** | `GET /products/paged`, `GET /products/{id}` | Public |
 | | `POST /products`, `PUT /products/{id}`, `DELETE /products/{id}` | **SuperAdmin** |
 | **Basket** | `GET/DELETE /basket`, `POST /basket/items`, `PUT/DELETE /basket/items/{productId}`, `POST /basket/merge` | Guest (`X-Buyer-Id` header) or authenticated |
 | **Brands / Types / Delivery methods** | CRUD and listing | See Swagger |
 | **Users** | Profile and addresses | Authenticated |
 | **Orders** | Create, list my orders, get by id, cancel, create payment | Authenticated (owner only) |
+![Swagger UI](docs/swagger-DeliveryMethod-Order.png)
 | **Payments** | Stripe webhook | Public, signature verified |
+![Swagger UI](docs/swagger-Payments-Products.png)
 | **Attachments** | `POST /attachments/cleanup` (removes orphaned images) | **SuperAdmin** |
 
 Failures are returned in a consistent ProblemDetails-style shape (`type`, `title`, `status`, `detail`/`errors`, `traceId`).
