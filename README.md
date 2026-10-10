@@ -3,9 +3,9 @@
 A production-minded e-commerce backend built with **ASP.NET Core (.NET 10)**, **Clean / Onion Architecture**, **CQRS**, and a security-first approach to authentication, authorization, and payments.
 
 ![Swagger UI](docs/swagger.png)
-(docs/swagger-Login-Example.png)
-(docs/swagger-Payments-Products.png)
-(docs/swagger-DeliveryMethod-Order.png)
+![Swagger UI](docs/swagger-Login-Example.png)
+![Swagger UI](docs/swagger-Payments-Products.png)
+![Swagger UI](docs/swagger-DeliveryMethod-Order.png)
 
 <!-- Add the CI badge here after setting up GitHub Actions -->
 
