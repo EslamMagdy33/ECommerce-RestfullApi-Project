@@ -9,14 +9,19 @@ public class AuthRateLimitTests:IClassFixture<CustomWebApplicationFactory>
     public AuthRateLimitTests(CustomWebApplicationFactory factory) =>
         client = factory.CreateClient();
     [Fact]
-    public async Task LogenIsRateLimitedAfter10Requests()
+    public async Task Login_is_rate_limited_after_10_requests()
     {
-        HttpResponseMessage? last = null;
-        for (int i = 0; i < 11; i++)
+        var body = new { Email = "invalid-email", Password = "" };
+
+        // الـ 10 المسموح بيهم: الـ Validation بيرفضهم بـ 400 من غير ما يلمسوا الـ DB
+        for (var i = 0; i < 10; i++)
         {
-            last =await client.PostAsJsonAsync("/api/v1/auth/login",
-                new { email = "nobody@test.com", password = "Wrong123" });
+            var response = await client.PostAsJsonAsync("/api/v1/auth/login", body);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
-        Assert.Equal(HttpStatusCode.TooManyRequests, last!.StatusCode);
+
+        // الطلب رقم 11 هو اللي لازم يتقفل
+        var limited = await client.PostAsJsonAsync("/api/v1/auth/login", body);
+        Assert.Equal(HttpStatusCode.TooManyRequests, limited.StatusCode);
     }
 }
