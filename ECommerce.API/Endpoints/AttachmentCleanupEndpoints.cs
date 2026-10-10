@@ -3,6 +3,7 @@ using Asp.Versioning.Builder;
 using ECommerce.API.Extensions;
 using ECommerce.API.Models;
 using ECommerce.Domain.Common;
+using ECommerce.Domain.Constants;
 using ECommerce.UseCases.Common.Interfaces;
 
 namespace ECommerce.API.Endpoints;
@@ -17,7 +18,8 @@ public static class AttachmentCleanupEndpoints
             .MapGroup("/api/v{version:apiVersion}/attachments")
             .WithTags("Attachments")
             .WithApiVersionSet(apiVersionSet)
-            .HasApiVersion(new ApiVersion(1, 0));
+            .HasApiVersion(new ApiVersion(1, 0))
+            .RequireAuthorization(p => p.RequireRole(Roles.SuperAdmin)); ;
 
         group.MapPost("/cleanup", async (
             IAttachmentCleanupService cleanupService,

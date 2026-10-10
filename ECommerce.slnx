@@ -10,5 +10,6 @@
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="ECommerce.Api.IntegrationTests/ECommerce.Api.IntegrationTests.csproj" Id="95922270-3f1c-4bf4-acf9-d33a081890d7" />
+    <Project Path="ECommerce.ArchitectureTests/ECommerce.ArchitectureTests.csproj" />
   </Folder>
 </Solution>

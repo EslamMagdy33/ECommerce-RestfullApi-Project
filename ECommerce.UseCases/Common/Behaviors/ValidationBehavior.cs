@@ -1,6 +1,7 @@
 ﻿using ECommerce.Domain.Common;
 using ECommerce.UseCases.Messaging.Abstractions;
 using FluentValidation;
+using System.Reflection;
 
 namespace ECommerce.UseCases.Common.Behaviors;
 
@@ -28,8 +29,30 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
             string.IsNullOrEmpty(firstFailure.ErrorCode) ? "Validation.Failed" : firstFailure.ErrorCode,
             firstFailure.ErrorMessage);
 
-        dynamic dynamicResponse = error;
-        return (TResponse)dynamicResponse;
+        var responseType = typeof(TResponse);
+
+        if (responseType == typeof(Result))
+            return (TResponse)(object)Result.Failure(error);
+
+        if (responseType.IsGenericType &&
+            responseType.GetGenericTypeDefinition() == typeof(Result<>))
+        {
+            var staticMethods = responseType
+                .GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
+
+            var failure = staticMethods.FirstOrDefault(m =>
+                m.Name == "Failure" && m.GetParameters().Length == 1);
+
+            if (failure is not null)
+                return (TResponse)failure.Invoke(null, new object[] { error })!;
+
+            throw new InvalidOperationException(
+                $"No Failure method on '{responseType}'. Static methods found: " +
+                string.Join(", ", staticMethods.Select(m => m.Name)));
+        }
+
+        throw new InvalidOperationException(
+            $"ValidationBehavior cannot create a failure result for '{responseType}'.");
 
     }
 }

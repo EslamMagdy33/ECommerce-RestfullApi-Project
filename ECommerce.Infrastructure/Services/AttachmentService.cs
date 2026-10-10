@@ -4,6 +4,7 @@ using ECommerce.Domain.Common;
 using ECommerce.Domain.Errors;
 using ECommerce.UseCases.Common.DTOs;
 using ECommerce.UseCases.Common.Interfaces;
+using ECommerce.UseCases.Common.Models;
 using ECommerce.UseCases.Common.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ public class AttachmentService : IAttachmentService
         var account = new Account(config.Value.CloudName, config.Value.ApiKey, config.Value.ApiSecret);
         _cloudinary = new Cloudinary(account);
     }
-    public async Task<Result<UploadedFile>> UploadAttachmentAsync(IFormFile file)
+    public async Task<Result<UploadedFile>> UploadAttachmentAsync(FileUpload file)
     {
        if(file.Length <= 0)
         {

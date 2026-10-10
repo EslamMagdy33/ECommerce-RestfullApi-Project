@@ -1,6 +1,6 @@
 ﻿using ECommerce.Domain.Common;
+using ECommerce.UseCases.Common.Models;
 using ECommerce.UseCases.Messaging.Abstractions;
-using Microsoft.AspNetCore.Http;
 
 namespace ECommerce.UseCases.Products.Commands.UpdateProduct;
 
@@ -9,7 +9,7 @@ public sealed record UpdateProductCommand(
     string Name,
     string Description,
     decimal Price,
-    IFormFile? Image,
+    FileUpload? Image,
     Guid ProductBrandId,
     Guid ProductTypeId)
     : ICommand<Result<Guid>>;

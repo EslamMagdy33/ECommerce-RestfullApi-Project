@@ -7,21 +7,31 @@ public class GlobalExceptionMidlleware(IProblemDetailsService problemDetailsServ
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        logger.LogError(exception, "UnHandled Exception");
-        httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        var (status, title, detail) = exception switch
+        {
+            BadHttpRequestException bad => (bad.StatusCode, "Bad Request",
+                "The request is malformed or missing required values."),
+            _ => (StatusCodes.Status500InternalServerError, "Internal Server Error",
+                "An unexpected error occurred. Please try again later.")
+        };
 
-        var probemDetailsContext = new ProblemDetailsContext
+        if (status >= StatusCodes.Status500InternalServerError)
+            logger.LogError(exception, "Unhandled exception");
+        else
+            logger.LogWarning("Bad request: {Message}", exception.Message);
+
+        httpContext.Response.StatusCode = status;
+
+        return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = httpContext,
             Exception = exception,
             ProblemDetails = new Microsoft.AspNetCore.Mvc.ProblemDetails
             {
-                Status = StatusCodes.Status500InternalServerError,
-                Title = "Internal Server Error ",
-                Detail = "An Unexpected error Occurred . Please try again Later"
+                Status = status,
+                Title = title,
+                Detail = detail
             }
-        };
-        return await problemDetailsService.TryWriteAsync(probemDetailsContext);
-
+        });
     }
 }
