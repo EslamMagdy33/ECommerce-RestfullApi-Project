@@ -5,6 +5,7 @@ using ECommerce.Domain.Repositories;
 using ECommerce.UseCases.Common.Interfaces;
 using ECommerce.UseCases.Messaging.Abstractions;
 using ECommerce.UseCases.Products.Specifications;
+using System.Data;
 
 namespace ECommerce.UseCases.Products.Commands.UpdateProduct;
 
@@ -157,13 +158,6 @@ public sealed class UpdateProductCommandHandler
         }
         catch (Exception ex)
         {
-
-            Console.WriteLine("========== UPDATE ERROR ==========");
-            Console.WriteLine(ex.Message);
-            Console.WriteLine(ex.InnerException?.Message);
-            Console.WriteLine(ex.InnerException?.InnerException?.Message);
-            Console.WriteLine("=================================");
-
             await attachmentService.DeleteAttachmentAsync(
                 uploadedFile.PublicId);
 

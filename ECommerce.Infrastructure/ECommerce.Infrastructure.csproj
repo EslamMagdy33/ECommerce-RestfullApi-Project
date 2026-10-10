@@ -52,8 +52,4 @@
     <ProjectReference Include="..\ECommerce.UseCases\ECommerce.UseCases.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="persistence\Data\Interceptor\" />
-  </ItemGroup>
-
 </Project>

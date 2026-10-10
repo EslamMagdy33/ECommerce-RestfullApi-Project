@@ -57,6 +57,9 @@ public class IdentityService(UserManager<ApplicationUser> userManager)
             return Result<AuthUserSnapshot>.Failure(IdentityErrors.InvalidCredentials);
         }
 
+        if (await userManager.GetAccessFailedCountAsync(user) > 0)
+            await userManager.ResetAccessFailedCountAsync(user);
+
         if (!user.EmailConfirmed)
             return Result<AuthUserSnapshot>.Failure(IdentityErrors.EmailNotConfirmed);
 
