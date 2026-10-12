@@ -1,10 +1,9 @@
 # ECommerce API
+![CI](https://github.com/EslamMagdy33/ECommerce-RestfullApi-Project/actions/workflows/ci.yml/badge.svg)
 
 A production-minded e-commerce backend built with **ASP.NET Core (.NET 10)**, **Clean / Onion Architecture**, **CQRS**, and a security-first approach to authentication, authorization, and payments.
 
 ![Swagger UI](docs/swagger.png)
-
-![CI](https://github.com/EslamMagdy33/ECommerce-RestfullApi-Project/actions/workflows/ci.yml/badge.svg)
 
 
 ## Table of Contents
