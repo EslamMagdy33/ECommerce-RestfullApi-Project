@@ -4,9 +4,8 @@ A production-minded e-commerce backend built with **ASP.NET Core (.NET 10)**, **
 
 ![Swagger UI](docs/swagger.png)
 
-<!-- Add the CI badge here after setting up GitHub Actions -->
+![CI](https://github.com/EslamMagdy33/ECommerce-RestfullApi-Project/actions/workflows/ci.yml/badge.svg)
 
----
 
 ## Table of Contents
 
