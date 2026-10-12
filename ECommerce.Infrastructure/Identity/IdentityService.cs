@@ -40,6 +40,35 @@ public class IdentityService(UserManager<ApplicationUser> userManager)
         return Result<AuthUserSnapshot>.Success(
             new AuthUserSnapshot(user.Id, user.Email!, user.DisplayName));
     }
+    public async Task<Result<AuthUserSnapshot>> ReplaceUnconfirmedUserAsync(
+        string email, string password, string? displayName, CancellationToken ct = default)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        
+        if(user is null)
+            return Result<AuthUserSnapshot>.Failure(IdentityErrors.UserNotFound);
+
+        if(user.EmailConfirmed)
+            return Result<AuthUserSnapshot>.Failure(IdentityErrors.EmailAlreadyConfirmed);
+
+        var token = await userManager.GeneratePasswordResetTokenAsync(user);
+        var resetResut=await userManager.ResetPasswordAsync(user, token, password);
+        if (!resetResut.Succeeded)
+        {
+            var msg=string.Join("; ", resetResut.Errors.Select(e => e.Description));
+            return Result<AuthUserSnapshot>.Failure(IdentityErrors.CreateFailed(msg));
+        }
+        user.DisplayName = displayName;
+        var updateResult = await userManager.UpdateAsync(user);
+        if(!updateResult.Succeeded)
+        {
+            var msg = string.Join("; ", updateResult.Errors.Select(e => e.Description));
+            return Result<AuthUserSnapshot>.Failure(IdentityErrors.CreateFailed(msg));
+        }
+        return Result<AuthUserSnapshot>.Success(
+            new AuthUserSnapshot(user.Id, user.Email!, user.DisplayName));
+
+    }
     public async Task<Result<AuthUserSnapshot>> ValidateCredentialsAsync(string email, string password, CancellationToken ct = default)
     {
         var user = await userManager.FindByEmailAsync(email);
@@ -133,5 +162,6 @@ public class IdentityService(UserManager<ApplicationUser> userManager)
         var roles = await userManager.GetRolesAsync(user);
         return roles.ToList();
     }
+
     
 }

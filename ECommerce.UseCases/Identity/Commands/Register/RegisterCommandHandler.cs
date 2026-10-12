@@ -30,17 +30,21 @@ public sealed class RegisterCommandHandler(
         {
             if(await identityService.IsEmailConfirmedAsync(email,ct))
                 return Result<EmailSentResponse>.Failure(IdentityErrors.EmailAlreadyExists);
-            
+            // آخر تسجيل بيكسب: نستبدل بيانات الدخول قبل ما نبعت كود جديد،
+            // عشان باسورد اتسجّل مسبقًا من حد تاني ما يفضلش صالح بعد التفعيل
+            var replaceResult = await identityService.ReplaceUnconfirmedUserAsync(email, request.Password,
+                request.DisplayName, ct);
+            if (replaceResult.IsFailure)
+                return Result<EmailSentResponse>.Failure(replaceResult.Error!);
+
             return await SendVerificationAsync(
-                email,
-                verificationCodeResent: true,
-                UnconfirmedResendMessage,ct );
+                email,verificationCodeResent: true,UnconfirmedResendMessage,ct );
         }
         var createResult = await identityService.CreateUserAsync(
             email, request.Password, request.DisplayName, ct);
 
         if (createResult.IsFailure)
-            return Result<EmailSentResponse>.Failure(createResult.Error);
+            return Result<EmailSentResponse>.Failure(createResult.Error!);
 
         return await SendVerificationAsync(
             email, verificationCodeResent: false, RegisteredMessage, ct);
@@ -55,7 +59,7 @@ public sealed class RegisterCommandHandler(
             $"Your verification code is: {code}\n\nThis code expires in {settings.Value.ExpirationMinutes} minutes.\n\nYou cannot sign in until you confirm this email.",
             ct);
         if (sendResul.IsFailure)
-            return Result<EmailSentResponse>.Failure(sendResul.Error);
+            return Result<EmailSentResponse>.Failure(sendResul.Error!);
 
         return Result<EmailSentResponse>.Success(
             new EmailSentResponse(email, verificationCodeResent, message));
