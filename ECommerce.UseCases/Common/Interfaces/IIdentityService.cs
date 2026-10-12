@@ -12,6 +12,7 @@ public interface IIdentityService
     Task<Result<AuthUserSnapshot>> GetUserByIdAsync(Guid userId, CancellationToken ct = default);
     Task<Result<AuthUserSnapshot>> UpdateProfileAsync(Guid userId, string? displayName, CancellationToken ct = default);
     Task<Result> ConfirmEmailAsync(string email,CancellationToken ct = default);
+    Task<Result<AuthUserSnapshot>> ReplaceUnconfirmedUserAsync(string email, string password, string? displayName, CancellationToken ct = default);
     Task<bool> IsEmailConfirmedAsync(string email,CancellationToken ct = default);
     Task<IReadOnlyList<string>> GetRolesAsync(Guid userId,CancellationToken ct = default);
 
