@@ -253,6 +253,7 @@ Known security gaps and pending hardening tasks are documented in the roadmap be
 - **Secrets** are kept out of the repository (user-secrets locally, environment variables elsewhere).
 - **Sensitive EF Core data logging** is enabled in Development only.
 - Regression tests lock in the above (401 on protected endpoints, rate limit, validation returning 400).
+- - **Registration** replaces the credentials of an unconfirmed account on re-registration, so a password set by someone else before email confirmation does not survive.
 
 ---
 
@@ -266,6 +267,7 @@ dotnet test ECommerce.slnx
 |---|---|
 | `ECommerce.Api.IntegrationTests` | Protected product and attachment endpoints return `401` without a token; auth endpoints are rate limited; invalid request bodies return `400` instead of `500` |
 | `ECommerce.ArchitectureTests` | Domain does not depend on outer layers; UseCases does not depend on Infrastructure/API or `Microsoft.AspNetCore.Http`; every validator is registered |
+| `ECommerce.UseCases.Tests` | Unit tests for command handlers with mocked dependencies (registration: new, unconfirmed, and confirmed email cases) |
 
 Integration tests use a `CustomWebApplicationFactory` that runs the app in a `Testing` environment with test configuration values (so no real secrets are needed). Tests that reach the database layer need a local SQL Server; switching to **Testcontainers** is on the roadmap.
 
@@ -276,7 +278,7 @@ Integration tests use a `CustomWebApplicationFactory` that runs the app in a `Te
 Being transparent about what is still open. These come from my own security and code review of the project.
 
 **Security and correctness (next up)**
-- [ ] Registration for an existing *unconfirmed* email should not leave a password-pre-hijacking window
+- [ X ] Registration for an existing *unconfirmed* email should not leave a password-pre-hijacking window
 - [ ] Per-email cooldown on resending verification codes
 - [ ] Order creation should re-read product prices from the database instead of trusting the cached basket
 - [ ] Cancelling an order should also cancel the Stripe PaymentIntent (and handle late payment success)
