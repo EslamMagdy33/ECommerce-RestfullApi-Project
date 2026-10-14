@@ -13,7 +13,8 @@ public sealed class AddItemToBasketCommandHandler(IBasketStore basketStore,IRead
 {
     public async Task<Result<GetBasketResponse>> Handle(AddItemToBasketCommand request, CancellationToken ct = default)
     {
-        var product = await productRepository.FirstOrDefaultAsync( new ProductForBasketSpecification(request.ProductId), ct);
+        var product = await productRepository.FirstOrDefaultAsync( 
+            new ProductForBasketSpecification([request.ProductId]), ct);
         if (product is null)
             return Result<GetBasketResponse>.Failure(ProductErrors.NotFound);
 

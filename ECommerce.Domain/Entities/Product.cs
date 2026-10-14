@@ -28,21 +28,20 @@ public sealed class Product : BaseEntity
         Guid id,string name,string description, Guid pictureAttachmentId, decimal price,Guid productBrandId,
         Guid productTypeId)
     {
-        var normalizedName = name.Trim();
-        var normalizedDescription = description.Trim();
-
         if (id == Guid.Empty)
             return Result<Product>.Failure(ProductErrors.InvalidId);
 
         if (string.IsNullOrWhiteSpace(name))
             return Result<Product>.Failure(ProductErrors.InvalidName);
 
+        var normalizedName = name.Trim();
         if (normalizedName.Length > MaxNameLength)
             return Result<Product>.Failure(ProductErrors.NameTooLong);
 
         if (string.IsNullOrWhiteSpace(description))
             return Result<Product>.Failure(ProductErrors.InvalidDescription);
 
+        var normalizedDescription = description.Trim();
         if (normalizedDescription.Length > MaxDescriptionLength)
             return Result<Product>.Failure(ProductErrors.DescriptionTooLong);
 

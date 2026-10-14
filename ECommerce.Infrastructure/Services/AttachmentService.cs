@@ -6,7 +6,6 @@ using ECommerce.UseCases.Common.DTOs;
 using ECommerce.UseCases.Common.Interfaces;
 using ECommerce.UseCases.Common.Models;
 using ECommerce.UseCases.Common.Settings;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

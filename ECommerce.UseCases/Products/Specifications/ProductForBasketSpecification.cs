@@ -6,10 +6,11 @@ namespace ECommerce.UseCases.Products.Specifications;
 
 public sealed class ProductForBasketSpecification : Specification<Product,ProductForBasketResponse>
 {
-    public ProductForBasketSpecification(Guid productId)
+    public ProductForBasketSpecification(IEnumerable<Guid> productIds)
     {
+        var ids=productIds.Distinct().ToList();
         Query
-            .Where(product => product.Id == productId)
+            .Where(product => ids.Contains(product.Id))
             .Select(product => new ProductForBasketResponse(
                                product.Id,
                                product.Name,
