@@ -283,6 +283,7 @@ Being transparent about what is still open. These come from my own security and 
 - [ ] Per-email cooldown on resending verification codes
 - [x] Order creation should re-read product prices from the database instead of trusting the cached basket
 - [x] Cancelling an order should also cancel the Stripe PaymentIntent (and handle late payment success)
+- [ ] Cancelling an order should also cancel the Stripe PaymentIntent (and handle late payment success)
 - [ ] Refresh-token rotation should be atomic under concurrent requests (concurrency token or conditional update)
 - [ ] Reduce account-state enumeration through register and confirm-email responses
 - [ ] Image upload validation (maximum size, allowed types)
