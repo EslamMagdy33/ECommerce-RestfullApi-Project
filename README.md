@@ -254,6 +254,7 @@ Known security gaps and pending hardening tasks are documented in the roadmap be
 - **Sensitive EF Core data logging** is enabled in Development only.
 - Regression tests lock in the above (401 on protected endpoints, rate limit, validation returning 400).
 - **Registration** replaces the credentials of an unconfirmed account on re-registration, so a password set by someone else before email confirmation does not survive.
+- **Payments** A payment that succeeds for an already-cancelled order is refunded automatically (idempotent, retried by the Stripe webhook on failure).
 ---
 
 ## Testing
@@ -281,7 +282,7 @@ Being transparent about what is still open. These come from my own security and 
 - [x] Registration for an existing *unconfirmed* email should not leave a password-pre-hijacking window
 - [ ] Per-email cooldown on resending verification codes
 - [x] Order creation should re-read product prices from the database instead of trusting the cached basket
-- [ ] Cancelling an order should also cancel the Stripe PaymentIntent (and handle late payment success)
+- [x] Cancelling an order should also cancel the Stripe PaymentIntent (and handle late payment success)
 - [ ] Refresh-token rotation should be atomic under concurrent requests (concurrency token or conditional update)
 - [ ] Reduce account-state enumeration through register and confirm-email responses
 - [ ] Image upload validation (maximum size, allowed types)
