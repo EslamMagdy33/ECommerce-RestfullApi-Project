@@ -8,7 +8,6 @@ using ECommerce.UseCases.Products.DTOs;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Xunit;
 // Alias on purpose: inside the ECommerce.UseCases.* namespaces, the simple name "Basket"
 // resolves to the ECommerce.UseCases.Basket namespace instead of the Basket entity.
 using BasketEntity = ECommerce.Domain.Entities.Basket;

@@ -6,6 +6,7 @@ namespace ECommerce.Api.IntegrationTests.Auth;
 public class AuthRateLimitTests:IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient client;
+
     public AuthRateLimitTests(CustomWebApplicationFactory factory) =>
         client = factory.CreateClient();
     [Fact]
