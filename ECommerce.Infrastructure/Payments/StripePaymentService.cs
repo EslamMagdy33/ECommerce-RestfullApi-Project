@@ -92,37 +92,66 @@ public sealed class StripePaymentService
             return Result<PaymentIntentResult>.Failure(OrderErrors.PaymentFailed);
         }
     }
-    public async Task PaymentSucceeded(string paymentIntentId, CancellationToken ct = default)
+    public async Task<Result> CancelPaymentIntentAsync(string paymentIntentId, Guid orderId, CancellationToken ct = default)
     {
-        var order = await orderRepository.FirstOrDefaultAsync(
-            new OrderByPaymentIntentSpecification(paymentIntentId, tracking: true), ct);
-        if (order is null)
+        if (string.IsNullOrEmpty(_settings.SecretKey) && string.IsNullOrWhiteSpace(paymentIntentId))
+            return Result.Failure(OrderErrors.PaymentCancellationFailed);
+
+        var requestOption = new RequestOptions
         {
-            logger.LogWarning(
-                "PaymentSucceeded: no order for PaymentIntent {Id}", paymentIntentId);
-            return;
-        }
-        var paid=order.MarkAsPaid(paymentIntentId);
-        if (paid.IsFailure)
+            ApiKey = _settings.SecretKey,
+            IdempotencyKey = $"payment_intent_order_{orderId:D}_cancel"
+        };
+        try
         {
-            logger.LogWarning(
-                "PaymentSucceeded MarkAsPaid failed for {OrderId}: {Error}",
-                order.Id, paid.Error.Code);
-            return;
+            var service = new PaymentIntentService();
+            await service.CancelAsync(
+                paymentIntentId,
+                new PaymentIntentCancelOptions { CancellationReason = "requested_by_customer" },
+                requestOption, ct);
+            logger.LogInformation("Cancelled PaymentIntent {Id} for Order {OrderId}", paymentIntentId, orderId);
+            return Result.Success();
         }
-        orderRepository.Update(order);
-        await unitOfWork.SaveChangesAsync(ct);
-        logger.LogInformation(
-            "Payment succeeded for Order {OrderId}, Intent {IntentId}",
-            order.Id, paymentIntentId);
+        catch (StripeException ex)
+        {
+            // Typical reason: the customer already paid. The webhook refunds that case automatically.
+            logger.LogWarning(ex, "Stripe cancel failed for PaymentIntent {Id} (Order {OrderId})", paymentIntentId, orderId);
+            return Result.Failure(OrderErrors.PaymentCancellationFailed);
+        }
+
     }
 
-    public Task PaymentFailed(string paymentIntentId, CancellationToken ct = default)
+    public async Task<Result> RefundPaymentIntentAsync(string paymentIntentId, CancellationToken ct = default)
     {
-        logger.LogWarning(
-            "Payment failed for PaymentIntent {Id}. Order stays Pending.",
-            paymentIntentId);
-        return Task.CompletedTask;
+        if (string.IsNullOrEmpty(_settings.SecretKey) && string.IsNullOrWhiteSpace(paymentIntentId))
+            return Result.Failure(OrderErrors.RefundFailed);
+        var requestOptions = new RequestOptions
+        {
+            ApiKey = _settings.SecretKey,
+            // Same key for the same PaymentIntent: webhook retries can never refund twice
+            IdempotencyKey = $"refund_{paymentIntentId}"
+        };
+        try
+        {
+            var service = new RefundService();
+            var refund = await service.CreateAsync(new RefundCreateOptions
+            {
+                PaymentIntent = paymentIntentId,
+                Reason = "requested_by_customer"
+            }, requestOptions, ct);
+            logger.LogInformation("Refunded PaymentIntent {IntentId} (Refund {RefundId})", paymentIntentId, refund.Id);
+            return Result.Success();
+        }
+        catch (StripeException ex) when (ex.StripeError?.Code == "charge_already_refunded")
+        {
+            logger.LogInformation("PaymentIntent {IntentId} was already refunded", paymentIntentId);
+            return Result.Success();
+        }
+        catch (StripeException ex)
+        {
+            logger.LogError(ex, "Stripe refund failed for PaymentIntent {IntentId}", paymentIntentId);
+            return Result.Failure(OrderErrors.RefundFailed);
+        }
     }
     public Result<StripeWebhookEvent> ParseWebhook(string jsonPayload, string stripeSignature)
     {
@@ -146,7 +175,6 @@ public sealed class StripePaymentService
         }
 
     }
-
     private Result<PaymentIntentResult> ToResult(PaymentIntent paymentIntent)
     {
         if (string.IsNullOrWhiteSpace(paymentIntent.ClientSecret))
@@ -158,5 +186,6 @@ public sealed class StripePaymentService
             paymentIntent.Status,
             StripeOptions.Value.PublishableKey));
     }
+
 }
 

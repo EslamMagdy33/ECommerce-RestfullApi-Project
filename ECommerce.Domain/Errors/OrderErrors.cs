@@ -78,4 +78,10 @@ public static class OrderErrors
         Error.Validation("Order.InvalidWebhook", "Stripe webhook signature is invalid.");
     public static readonly Error ProductUnavailable =
     Error.Conflict("Order.ProductUnavailable", "One or more products in your basket are no longer available.");
+
+    public static readonly Error PaymentCancellationFailed =
+    Error.Failure("Order.PaymentCancellationFailed", "The payment could not be cancelled.");
+
+    public static readonly Error RefundFailed =
+        Error.Failure("Order.RefundFailed", "The payment could not be refunded.");
 }
